@@ -1,0 +1,22 @@
+.codex
+.codex/
+
+# Heavy artifacts: keep them fuera de Git por tamano y regenerabilidad.
+datasets/
+models/
+results/
+release-assets/
+
+# Common ML outputs
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.bin
+*.pkl
+*.joblib
+
+# Notebook/runtime noise
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
