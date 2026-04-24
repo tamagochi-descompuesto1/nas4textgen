@@ -1,16 +1,16 @@
 # nas4textgen
 
-Proyecto de experimentacion para generacion de texto con `DistilGPT2`, exploracion de arquitecturas por `NAS` y uso de modelos sustitutos para acelerar la busqueda.
+Research project on text generation with `DistilGPT2`, Neural Architecture Search (`NAS`), and surrogate models to accelerate the search process.
 
-Por el contenido de los notebooks, scripts y reportes, el repositorio queda organizado en estas areas:
+Based on the actual contents of the notebooks, scripts, and reports, the repository is organized into these areas:
 
-- `docs/`: documentacion de referencia, notas de Jetson y reportes exportados.
-- `notebooks/`: trabajo exploratorio en Jupyter, separado por preparacion de datos, modelado y optimizacion.
-- `scripts/`: scripts reutilizables fuera de notebook.
-- `models/`: checkpoints, tokenizers, ONNX y modelos entrenados.
-- `results/`: resultados, graficas, salidas NAS y generaciones de texto.
+- `docs/`: reference documentation, Jetson notes, and exported reports.
+- `notebooks/`: exploratory Jupyter work, separated into data preparation, modeling, and optimization.
+- `scripts/`: reusable scripts outside notebooks.
+- `models/`: checkpoints, tokenizers, ONNX exports, and trained models.
+- `results/`: experiment outputs, plots, NAS results, and generated text.
 
-## Estructura
+## Structure
 
 ```text
 .
@@ -28,31 +28,31 @@ Por el contenido de los notebooks, scripts y reportes, el repositorio queda orga
 └── results
 ```
 
-## Notas practicas
+## Practical Notes
 
-- `notebooks/` contiene trabajo exploratorio. Algunos notebooks todavia tienen rutas historicas de Colab o referencias antiguas.
-- `scripts/jetson/` concentra la evaluacion y telemetria para ejecucion en Jetson.
-- `scripts/release/package_release_assets.sh` genera los assets pesados para `GitHub Releases`.
-- `scripts/release/upload_release_assets.sh` publica los assets generados a `GitHub Releases` usando `gh`.
-- `docs/reference/nas4textgen.pdf` queda como documento principal del proyecto.
-- `docs/project-documentation.md` concentra la documentacion extensa del proyecto, basada en el manuscrito y en el contenido real del repo.
-- `docs/releases.md` documenta como se distribuyen modelos y resultados fuera de Git.
+- `notebooks/` contains exploratory work. Some notebooks still include legacy Colab paths or older references.
+- `scripts/jetson/` concentrates evaluation and telemetry for Jetson execution.
+- `scripts/release/package_release_assets.sh` generates the heavy assets intended for `GitHub Releases`.
+- `scripts/release/upload_release_assets.sh` publishes those generated assets to `GitHub Releases` using `gh`.
+- `docs/reference/nas4textgen.pdf` is the main research document for the project.
+- `docs/project-documentation.md` contains the long-form project documentation, based on the manuscript and the real repository contents.
+- `docs/releases.md` explains how models and results are distributed outside Git.
 
-## Que conviene versionar
+## What Should Be Versioned
 
-Con el estado actual del arbol, no conviene subir a Git los artefactos pesados directamente en commits:
+With the current project layout, heavy artifacts should not be committed directly into Git:
 
-- `models/` ocupa alrededor de `49G`.
-- `results/` ocupa alrededor de `8.5G`.
+- `models/` is approximately `49G`.
+- `results/` is approximately `8.5G`.
 
-Eso no solo choca con limites practicos de Git y de hosting, tambien hace muy costoso clonar, revisar y mantener el repo.
+This is not only problematic for Git and hosting limits, it also makes cloning, reviewing, and maintaining the repository unnecessarily expensive.
 
-## Distribucion recomendada
+## Recommended Distribution Strategy
 
-- Mantener en Git solo `docs/`, `notebooks/`, `scripts/` y archivos de configuracion.
-- Distribuir modelos y resultados mediante `GitHub Releases`.
-- No usar `Git LFS` en este proyecto.
-- No conservar `datasets/` en el repo local ni en releases.
-- Generar paquetes partidos de menos de `2 GiB` con `scripts/release/package_release_assets.sh`.
-- Publicar esos paquetes con `scripts/release/upload_release_assets.sh <owner/repo>` una vez que `gh` este autenticado.
-- Conservar trazabilidad con `release-assets/manifest.csv` y checksums `sha256`.
+- Keep only `docs/`, `notebooks/`, `scripts/`, and configuration files in Git.
+- Distribute models and results through `GitHub Releases`.
+- Do not use `Git LFS` in this project.
+- Do not keep `datasets/` in the local repository or in releases.
+- Generate split packages smaller than `2 GiB` with `scripts/release/package_release_assets.sh`.
+- Publish those packages with `scripts/release/upload_release_assets.sh <owner/repo>` once `gh` is authenticated.
+- Preserve traceability with `release-assets/manifest.csv` and `sha256` checksums.

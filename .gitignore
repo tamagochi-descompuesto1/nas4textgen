@@ -1,7 +1,7 @@
 .codex
 .codex/
 
-# Heavy artifacts: keep them fuera de Git por tamano y regenerabilidad.
+# Heavy artifacts: keep them out of Git because of size and regenerability.
 datasets/
 models/
 results/

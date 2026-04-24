@@ -1,34 +1,34 @@
-# Releases y artefactos
+# Releases and Artifacts
 
-Este proyecto distribuye sus artefactos pesados mediante `GitHub Releases`, no mediante `Git LFS`.
+This project distributes its heavy artifacts through `GitHub Releases`, not through `Git LFS`.
 
-## Que se publica en Releases
+## What Gets Published in Releases
 
-- Checkpoints base de `DistilGPT2`
-- Modelos NAS entrenados
-- Modelos del surrogate
-- Resultados de `results/models`
-- Resultados de `results/nas`
-- Resultados de `results/surrogate-models`
-- Resultados de `results/text-gen`
+- Base `DistilGPT2` checkpoints
+- Trained NAS models
+- Surrogate models
+- Outputs from `results/models`
+- Outputs from `results/nas`
+- Outputs from `results/surrogate-models`
+- Outputs from `results/text-gen`
 
-## Que no se publica
+## What Does Not Get Published
 
 - `datasets/`
 
-Los datasets fueron eliminados del arbol local del proyecto para ahorrar espacio y porque no son necesarios para distribuir los resultados principales del trabajo.
+Datasets were removed from the local project tree to save disk space and because they are not required for distributing the main research outputs.
 
-## Como se empaquetan los assets
+## How Assets Are Packaged
 
-El script [scripts/release/package_release_assets.sh](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/release/package_release_assets.sh:1) empaqueta los artefactos pesados en archivos `tar.gz` partidos en fragmentos de `1900 MiB`, que quedan por debajo del limite de `2 GiB` por asset de GitHub Releases.
+The script [scripts/release/package_release_assets.sh](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/release/package_release_assets.sh:1) packages heavy artifacts into `tar.gz` archives split into `1900 MiB` chunks, keeping each file below the `2 GiB` GitHub Releases asset limit.
 
-Cada paquete genera:
+Each package produces:
 
-- archivos `.part-*`
-- un archivo `.sha256` por cada fragmento
-- un `manifest.csv` con tamanos y checksums
+- `.part-*` files
+- one `.sha256` file per chunk
+- a `manifest.csv` file with sizes and checksums
 
-## Distribucion sugerida en Releases
+## Suggested Release Layout
 
 - `v1.0-base-models`
   - `models_distil_gpt2_base.tar.gz.part-*`
@@ -44,12 +44,12 @@ Cada paquete genera:
 - `v1.0-results-textgen`
   - `results_text_gen.tar.gz.part-*`
 
-## Flujo operativo
+## Operational Flow
 
-1. Ejecutar el script de empaquetado.
-2. Revisar `release-assets/manifest.csv`.
-3. Autenticarse con `gh auth login` y definir el repositorio remoto.
-4. Ejecutar [scripts/release/upload_release_assets.sh](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/release/upload_release_assets.sh:1) con el argumento `owner/repo`.
-5. Crear o reutilizar los releases en GitHub.
-6. Subir a cada release los fragmentos correspondientes.
-5. Conservar en el `README` los enlaces a esos releases.
+1. Run the packaging script.
+2. Review `release-assets/manifest.csv`.
+3. Authenticate with `gh auth login` and define the remote repository.
+4. Run [scripts/release/upload_release_assets.sh](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/release/upload_release_assets.sh:1) with the `owner/repo` argument.
+5. Create or reuse the releases on GitHub.
+6. Upload the corresponding chunks to each release.
+7. Keep the release links documented in the `README`.

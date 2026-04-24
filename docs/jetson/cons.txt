@@ -1,4 +1,4 @@
-revisar historial de cosas a ejecutar
+review history of commands to run
 
 To run a command as administrator (user "root"), use "sudo <command>".
 See "man sudo_root" for details.

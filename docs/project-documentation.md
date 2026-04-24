@@ -1,163 +1,170 @@
-# Documentacion Integral del Proyecto `nas4textgen`
+# Comprehensive Project Documentation for `nas4textgen`
 
-## 1. Proposito de este documento
+## 1. Purpose of This Document
 
-Este documento describe de forma extensa el proyecto `nas4textgen` desde dos perspectivas complementarias:
+This document provides a detailed description of the `nas4textgen` project from two complementary perspectives:
 
-- La perspectiva de investigacion, basada principalmente en el manuscrito [nas4textgen.pdf](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reference/nas4textgen.pdf:1).
-- La perspectiva de implementacion, basada en los notebooks, scripts, artefactos y reportes presentes en este repositorio.
+- The research perspective, based primarily on [nas4textgen.pdf](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reference/nas4textgen.pdf:1).
+- The implementation perspective, based on the notebooks, scripts, artifacts, and reports contained in this repository.
 
-La idea es que este archivo funcione como documentacion madre del proyecto: explica que problema se estudia, cual es la propuesta metodologica, como se organiza el repositorio, que contiene cada carpeta, como se relacionan los codigos con la investigacion y cuales son las limitaciones practicas del estado actual del repo.
+Its purpose is to act as the main documentation layer for the repository. It explains:
 
-## 2. Resumen ejecutivo del proyecto
+- the research problem,
+- the proposed methodology,
+- the repository layout,
+- the role of each major file and directory,
+- the relationship between the code and the manuscript,
+- and the practical constraints of maintaining this project as a research repository.
 
-`nas4textgen` es un proyecto de investigacion sobre Neural Architecture Search (NAS) para generacion de texto. La propuesta central consiste en definir un espacio de busqueda inspirado en `DistilGPT2` y explorarlo con algoritmos evolutivos multiobjetivo para encontrar arquitecturas que logren un mejor compromiso entre:
+## 2. Executive Summary
 
-- Calidad semantica de generacion, medida principalmente con `METEOR`.
-- Eficiencia del modelo, aproximada durante la busqueda con el numero de parametros y evaluada despues con metricas mas cercanas a hardware real.
+`nas4textgen` is a research project on Neural Architecture Search (`NAS`) for text generation. Its core proposal is to define a DistilGPT2-inspired search space and explore it with multi-objective evolutionary search in order to recover architectures that balance:
 
-El proyecto no se limita a entrenar un modelo de lenguaje. Su contribucion principal es metodologica:
+- semantic text-generation quality, mainly measured with `METEOR`,
+- and model efficiency, approximated during search with parameter count and later evaluated with hardware-oriented metrics.
 
-- Diseña un espacio de busqueda continuo y mixto para arquitecturas tipo Transformer inspiradas en DistilGPT2.
-- Propone y compara dos estrategias de busqueda multiobjetivo: `SMS-EMOA` y `Lex-MODES`.
-- Usa un modelo sustituto o `surrogate model` para predecir `METEOR` y reducir drasticamente el costo computacional de la busqueda.
-- Evalua las arquitecturas recuperadas no solo con calidad semantica, sino tambien con indicadores de despliegue en hardware, particularmente sobre Jetson.
+The project is not just about training a text-generation model. Its main contribution is methodological:
 
-El manuscrito reporta que las arquitecturas descubiertas por NAS superan al baseline seleccionado de DistilGPT2 en METEOR y, en varios casos, muestran perfiles de consumo de hardware mas atractivos para entornos restringidos.
+- It designs a continuous mixed search space for Transformer-based architectures inspired by DistilGPT2.
+- It proposes and compares two multi-objective search strategies: `SMS-EMOA` and `Lex-MODES`.
+- It uses a surrogate model to predict `METEOR`, reducing the computational cost of the search.
+- It evaluates the discovered architectures not only in terms of semantic quality but also in terms of deployment-oriented hardware behavior, especially on Jetson hardware.
 
-## 3. Problema de investigacion
+According to the manuscript, the recovered architectures improve the selected DistilGPT2 baseline in `METEOR` and expose meaningful trade-offs between semantic quality and deployment efficiency.
 
-Segun el manuscrito, el proyecto nace de una tension conocida en NLP moderno:
+## 3. Research Problem
 
-- Los modelos de generacion de texto son cada vez mas capaces.
-- Pero ese aumento de capacidad suele venir acompañado de costos computacionales altos.
-- Eso complica su uso en dispositivos con recursos limitados, como edge devices o plataformas embebidas.
+The manuscript is built around a common tension in modern NLP:
 
-El documento plantea que el diseño manual de arquitecturas profundas para generacion de texto:
+- text-generation models are becoming more capable,
+- but that capability often comes with a high computational cost,
+- which makes deployment in constrained environments much harder.
 
-- depende mucho de experiencia humana,
-- escala mal conforme crece la complejidad del modelo,
-- y no garantiza encontrar configuraciones realmente eficientes para despliegue.
+The document argues that manual architecture design for text generation:
 
-En ese contexto, NAS aparece como una forma de automatizar el diseño arquitectonico. Sin embargo, aplicar NAS a modelos de lenguaje sigue siendo caro y metodologicamente dificil, por varias razones:
+- depends heavily on expert knowledge,
+- scales poorly as model complexity grows,
+- and does not guarantee efficient architectures for practical deployment.
 
-- El espacio de busqueda es grande.
-- Entrenar cada arquitectura candidata cuesta mucho.
-- La mejor arquitectura no depende solo de calidad de texto, sino tambien de consumo de recursos.
+In that context, NAS becomes a natural way to automate architectural design. However, applying NAS to text-generation models is still expensive and methodologically difficult because:
 
-La pregunta de investigacion que estructura el proyecto es esencialmente esta:
+- the search space is large,
+- training every candidate architecture is costly,
+- and the best architecture must account for both quality and deployment constraints.
 
-1. Si es posible integrar un espacio de busqueda basado en DistilGPT2, un esquema de busqueda evolutiva multiobjetivo y un predictor de desempeño en un solo framework NAS para generacion de texto.
-2. Si ese framework puede recuperar arquitecturas con compromisos significativos entre calidad semantica y eficiencia orientada a despliegue.
+The underlying research question is essentially this:
 
-## 4. Aporte principal de la investigacion
+1. Can a DistilGPT2-based search space, a multi-objective evolutionary search process, and a model-based performance predictor be integrated into one NAS framework for text generation?
+2. Can that framework recover architectures with meaningful trade-offs between semantic quality and deployment-oriented efficiency?
 
-De acuerdo con las primeras paginas del PDF, los aportes declarados son:
+## 4. Main Research Contributions
 
-1. Un framework NAS multiobjetivo para generacion de texto basado en una familia inspirada en DistilGPT2.
-2. Un espacio de busqueda continuo y adaptado a generacion de texto, con variables estructurales y funcionales.
-3. La incorporacion de un predictor basado en modelo para evitar entrenar exhaustivamente todas las arquitecturas candidatas.
-4. La recuperacion de arquitecturas que mejoran el baseline seleccionado en METEOR y que exponen distintos compromisos entre calidad y costo de despliegue.
+From the manuscript highlights and abstract, the main contributions are:
 
-En otras palabras, el proyecto no solo busca una arquitectura "mejor", sino una familia de arquitecturas con perfiles diferentes:
+1. A multi-objective NAS framework for text generation based on a DistilGPT2-inspired family of architectures.
+2. A continuous search space tailored to text generation, with structural and functional design variables.
+3. A model-based performance predictor that avoids exhaustive training of every candidate architecture.
+4. A set of recovered architectures that improve the selected baseline in `METEOR` while revealing different deployment-oriented trade-offs.
 
-- unas mas compactas,
-- otras mas potentes semanticamente,
-- y otras mas balanceadas para hardware.
+The project is therefore not looking for one universally best architecture. It is looking for a set of architectures with different profiles:
 
-## 5. Fundamento teorico resumido
+- more compact models,
+- more semantically competitive models,
+- and more balanced models for deployment.
 
-El manuscrito dedica una parte importante al marco teorico. Los conceptos clave que sustentan el repo son estos.
+## 5. Theoretical Background
+
+The manuscript grounds the project in several key ideas.
 
 ### 5.1. Neural Architecture Search
 
-NAS se presenta como un proceso con tres componentes:
+NAS is described through three canonical components:
 
-- `search space`: conjunto de arquitecturas candidatas.
-- `search strategy`: mecanismo para generar y seleccionar candidatas.
-- `evaluation strategy`: forma de estimar la calidad de cada candidata.
+- `search space`: the set of candidate architectures.
+- `search strategy`: the mechanism used to generate and select candidates.
+- `evaluation strategy`: the method used to estimate candidate quality.
 
-El proyecto adopta exactamente esa estructura conceptual.
+The project follows exactly that structure.
 
-### 5.2. NAS para generacion de texto
+### 5.2. NAS for Text Generation
 
-El documento sostiene que NAS ha avanzado mucho en vision computacional, pero menos en NLP, y menos aun en tareas de generacion de texto con enfoque hardware-aware.
+The manuscript argues that NAS has progressed substantially in computer vision, but much less in NLP and especially in hardware-aware text generation.
 
-Por eso el repositorio mezcla varias capas que a primera vista parecen dispersas:
+That is why this repository contains a combination of:
 
-- notebooks de preprocess,
-- entrenamiento de DistilGPT2,
-- modelado sustituto,
-- algoritmos evolutivos,
-- y medicion de hardware en Jetson.
+- data preparation notebooks,
+- baseline model training and evaluation,
+- surrogate modeling,
+- evolutionary search,
+- and Jetson hardware instrumentation.
 
-Todas esas piezas existen porque el problema no es solo "entrenar un modelo", sino cerrar el ciclo completo de NAS para texto.
+Those components are not accidental. They reflect the full NAS pipeline required to support the research claim.
 
-### 5.3. NAS multiobjetivo y hardware-aware
+### 5.3. Multi-objective and Hardware-aware NAS
 
-El paper adopta la vision de `MoNAS` y `hardware-aware NAS`:
+The project adopts the perspective of multi-objective NAS and hardware-aware NAS:
 
-- no optimizar solo calidad,
-- sino recuperar soluciones Pareto o lexicograficamente preferidas,
-- tomando en cuenta restricciones practicas de despliegue.
+- not optimizing quality alone,
+- but recovering trade-off architectures,
+- while considering deployment constraints.
 
-Durante la busqueda, la eficiencia se aproxima mediante numero de parametros.
+During search, efficiency is approximated with parameter count.
 
-Despues, en la evaluacion final, la eficiencia se mide mas cerca del hardware real mediante:
+During final evaluation, efficiency is measured more concretely through device-level indicators:
 
-- consumo de potencia,
-- uso de memoria,
-- carga de GPU,
-- frecuencia de CPU.
+- power consumption,
+- memory usage,
+- GPU utilization,
+- CPU frequency.
 
-Esa separacion entre proxy de eficiencia y eficiencia real es uno de los hallazgos centrales del proyecto.
+That distinction between a cheap efficiency proxy and real deployment behavior becomes one of the manuscript’s main findings.
 
-## 6. Metodologia de investigacion descrita en el PDF
+## 6. Research Methodology from the Manuscript
 
-Esta es la columna vertebral conceptual del proyecto.
+This section summarizes the conceptual backbone of the project.
 
-### 6.1. Arquitectura base
+### 6.1. Baseline Architecture
 
-La arquitectura base elegida es `DistilGPT2`, seleccionada por su balance entre capacidad generativa y costo computacional.
+The selected baseline is `DistilGPT2`, chosen because it offers a reasonable balance between generation capability and computational efficiency.
 
-El PDF explica que la arquitectura se divide conceptualmente en:
+The manuscript conceptually splits the architecture into:
 
-- embedding de texto,
-- embedding posicional,
-- una pila de unidades Transformer,
-- una normalizacion final.
+- text embedding,
+- positional embedding,
+- a stack of Transformer units,
+- a final normalization layer.
 
-La busqueda NAS solo modifica la parte intermedia: la pila Transformer y sus hiperparametros/parametros arquitectonicos asociados. Los embeddings y la capa final se mantienen fijos.
+The NAS process only modifies the middle Transformer stack and its associated design variables. Embeddings and the final normalization stage remain fixed.
 
-### 6.2. Representacion de una arquitectura candidata
+### 6.2. Candidate Representation
 
-El manuscrito define una arquitectura candidata como:
+The manuscript defines a candidate architecture as:
 
 `N = [e, l, n, h, r, a, g]`
 
-donde:
+where:
 
-- `e`: embedding dimension.
-- `l`: maximum embedding sequence length.
-- `n`: numero de unidades Transformer.
-- `h`: numero de cabezas de atencion.
-- `r`: residual dropout.
-- `a`: attention dropout.
-- `g`: funcion de activacion del FFN.
+- `e`: embedding dimension
+- `l`: maximum embedding sequence length
+- `n`: number of Transformer units
+- `h`: number of attention heads
+- `r`: residual dropout
+- `a`: attention dropout
+- `g`: FFN activation function
 
-### 6.3. Dominio de las variables
+### 6.3. Search-Space Variables
 
-El paper reporta el siguiente espacio de busqueda:
+The paper reports the following search space:
 
-- `e`: valores proporcionales a `h`, descritos como `{h×1, h×2, ..., h×70}`.
-- `l`: `{512, 1024}`.
-- `n`: `{2, 4, 6, 12, 24, 48}`.
-- `h`: `{4, 8, 12, 16, 32, 64}`.
-- `r`: `[0.0, 0.3]`.
-- `a`: `[0.0, 0.3]`.
-- `g`: `{GeLU, ReLU, Tanh, Swish, Sigmoid}`.
+- `e`: values proportional to `h`, written as `{h×1, h×2, ..., h×70}`
+- `l`: `{512, 1024}`
+- `n`: `{2, 4, 6, 12, 24, 48}`
+- `h`: `{4, 8, 12, 16, 32, 64}`
+- `r`: `[0.0, 0.3]`
+- `a`: `[0.0, 0.3]`
+- `g`: `{GeLU, ReLU, Tanh, Swish, Sigmoid}`
 
-La activacion categorica `g` se mapea al intervalo `[0, 1]` para poder trabajar con una representacion continua:
+The categorical activation `g` is mapped to `[0, 1]`:
 
 - `GeLU`: `[0.0, 0.2)`
 - `ReLU`: `[0.2, 0.4)`
@@ -165,115 +172,115 @@ La activacion categorica `g` se mapea al intervalo `[0, 1]` para poder trabajar 
 - `Swish`: `[0.6, 0.8)`
 - `Sigmoid`: `[0.8, 1.0]`
 
-El documento estima un tamaño aproximado del espacio de busqueda de `~1.008 × 10^7` al discretizar las variables continuas en 20 bins.
+The manuscript estimates an approximate search-space size of `~1.008 × 10^7` when discretizing continuous dimensions into 20 bins.
 
-### 6.4. Formulacion multiobjetivo
+### 6.4. Multi-objective Formulation
 
-El problema se formula como biobjetivo:
+The problem is formulated as a bi-objective optimization task:
 
-- Maximizar `METEOR`.
-- Minimizar `parameter count`.
+- maximize `METEOR`
+- minimize `parameter count`
 
-La motivacion del paper es clara:
+The paper motivates that choice as follows:
 
-- `METEOR` se adopta como metrica de calidad semantica.
-- El numero de parametros se usa como aproximacion interpretable y barata de eficiencia.
+- `METEOR` is used as the semantic quality target,
+- parameter count is used as a practical and interpretable proxy for efficiency.
 
-El mismo manuscrito advierte que numero de parametros no captura por completo el comportamiento real de despliegue.
+The paper also explicitly states that parameter count is not a complete description of real deployment cost.
 
-### 6.5. Estrategias de busqueda
+### 6.5. Search Strategies
 
-El proyecto compara dos estrategias principales.
+Two main search strategies are evaluated.
 
 #### 6.5.1. SMS-EMOA
 
-Se usa como optimizador multiobjetivo de referencia.
+`SMS-EMOA` is used as the reference multi-objective evolutionary optimizer.
 
-Segun el PDF:
+According to the manuscript:
 
-- evoluciona una poblacion de tamano fijo,
-- usa simulated binary crossover y polynomial mutation,
-- y la seleccion de sobrevivientes se guía por contribucion al hipervolumen.
+- it evolves a fixed-size population,
+- uses simulated binary crossover and polynomial mutation,
+- and selects survivors based on hypervolume contribution.
 
-El punto de referencia de hipervolumen se fija en `[1×10^9, 0.0]`, negando METEOR para adaptarlo a computacion basada en minimizacion.
+The hypervolume reference point is `[1×10^9, 0.0]`, with `METEOR` negated to adapt to minimization-based hypervolume computation.
 
 #### 6.5.2. Lex-MODES
 
-Esta es la estrategia principal propuesta.
+`Lex-MODES` is the main lexicographic strategy proposed in the project.
 
-El PDF la describe como una formulacion lexicografica evolutiva que combina:
+The paper describes it as a formulation that combines:
 
-- una variante de `(µ + 1)` evolution strategy,
-- operadores de Differential Evolution,
-- y una mecanica de supervivencia inspirada por SMS-EMOA.
+- a variant of `(µ + 1)` evolution strategy,
+- Differential Evolution operators,
+- and an SMS-EMOA-inspired survival mechanism.
 
-Su idea central es sesgar la busqueda hacia eficiencia:
+Its key idea is to bias the search toward efficiency:
 
-- criterio primario: `parameter count`,
-- criterio secundario: `METEOR`.
+- primary ranking criterion: `parameter count`
+- tie-breaking criterion: `METEOR`
 
-La intuicion declarada en el manuscrito es que esta presion lexicografica favorece una exploracion mas orientada a hardware y complementa las soluciones de SMS-EMOA.
+The stated motivation is that this lexicographic pressure should recover more hardware-oriented architectures and complement SMS-EMOA’s solution set.
 
-### 6.6. Operadores en Lex-MODES
+### 6.6. Lex-MODES Operators
 
-El paper especifica:
+The manuscript specifies:
 
-- esquema `DE/best/1/bin`,
-- mutacion basada en el mejor vector actual y dos vectores aleatorios,
-- crossover binomial,
-- y una etapa de reparacion para mantener validez estructural.
+- `DE/best/1/bin`,
+- mutation based on the current best vector and two random vectors,
+- binomial crossover,
+- and a repair stage to restore valid architectures.
 
-Como la codificacion mezcla variables discretas y continuas, todas se llevan al intervalo `[0, 1]` para operar en un espacio comun y luego se reconstruyen a su dominio original.
+Because the representation mixes discrete and continuous variables, all alleles are mapped to `[0, 1]` so that DE operators can be applied uniformly before decoding them back into valid architectural values.
 
-### 6.7. Autoadaptacion del factor F
+### 6.7. Self-adaptation of `F`
 
-El PDF reporta que `F` puede adaptarse usando la regla del `1/5 success rule`:
+The paper reports a self-adaptation mechanism for `F` using the `1/5 success rule`:
 
-- si la razon de exito es baja, el paso se ajusta en una direccion,
-- si es alta, se ajusta en la otra,
-- con `c = 0.817`.
+- if the success ratio is below the threshold, the step size changes one way,
+- if it is above the threshold, it changes the other way,
+- using `c = 0.817`.
 
-Esto aparece tambien reflejado en los reportes de resultados, donde se distinguen configuraciones con y sin auto-adaptacion.
+This also appears in the experiment summaries, where some Lex-MODES configurations enable self-adaptation and others do not.
 
-### 6.8. Evaluacion basada en modelo sustituto
+### 6.8. Model-based Evaluation
 
-Esta es una parte critica de la propuesta.
+This is one of the core practical ideas of the project.
 
-El paper argumenta que entrenar todas las arquitecturas es inviable. Da un ejemplo ilustrativo:
+The manuscript argues that fully training all candidates is infeasible. It gives a concrete example:
 
-- si cada arquitectura tardara 20 minutos en entrenarse,
-- explorar exhaustivamente el espacio requeriria cerca de 140,000 dias.
+- if each architecture required 20 minutes of training,
+- exhaustive exploration would take nearly 140,000 days.
 
-Por eso, durante la busqueda:
+So during search:
 
-- `METEOR` no se obtiene entrenando cada modelo, sino con un predictor.
-- el numero de parametros se estima de forma determinista a partir de la arquitectura reconstruida.
+- `METEOR` is estimated by a predictor rather than full training,
+- parameter count is computed deterministically after decoding the candidate architecture.
 
-### 6.9. Dataset del predictor
+### 6.9. Surrogate Training Data
 
-El predictor se entrena con:
+The predictor is trained with:
 
-- `300` arquitecturas muestreadas del espacio de busqueda,
-- completamente entrenadas sobre `WikiText2`,
-- usando `Latin hypercube sampling` para cubrir mejor el espacio.
+- `300` architectures sampled from the search space,
+- fully trained on `WikiText2`,
+- using Latin hypercube sampling to improve coverage of the design space.
 
-La estructura conceptual del dataset es:
+Conceptually, the dataset looks like:
 
-- entrada: arquitectura codificada,
-- salida: score `METEOR`.
+- input: encoded architecture
+- output: observed `METEOR`
 
-### 6.10. Candidatos a predictor
+### 6.10. Predictor Candidates
 
-El manuscrito considera cuatro regresores:
+The manuscript evaluates four regressors:
 
 - `SVR`
 - `Random Forest Regressor`
 - `XGBoost Regressor`
 - `MLP Regressor`
 
-Se normalizan las entradas, se usa `GridSearch` con `3-fold CV`, y luego `10` repeticiones de `5-fold CV` para robustecer la comparacion.
+Inputs are normalized, the models are tuned with `GridSearch` and `3-fold CV`, and then evaluated through `10` repetitions of `5-fold CV`.
 
-Las metricas de comparacion del predictor son:
+The reported evaluation metrics are:
 
 - `MAE`
 - `MSE`
@@ -283,185 +290,185 @@ Las metricas de comparacion del predictor son:
 - `Pearson`
 - `Spearman`
 
-### 6.11. Predictor seleccionado
+### 6.11. Selected Predictor
 
-El PDF concluye que el `MLP Regressor` es el predictor mas adecuado para integrarlo al loop NAS.
+The manuscript concludes that `MLP Regressor` is the most suitable predictor for integration into the NAS loop.
 
-La razon que enfatiza el manuscrito no es solo ranking relativo, sino utilidad practica:
+The key argument is not just relative ordering of candidates, but practical usefulness:
 
-- necesita estimaciones suficientemente fieles del objetivo,
-- no solo preservar ordenamientos groseros.
+- the NAS process needs estimates that are accurate enough to guide optimization,
+- not merely a rough ranking.
 
-Por eso el MLP se privilegia especialmente por evidencia favorable en `RMSE` y `MAPE`.
+For that reason, `MLP` is especially favored in the manuscript because of its evidence on `RMSE` and `MAPE`.
 
-### 6.12. Protocolo de evaluacion final
+### 6.12. Final Evaluation Protocol
 
-El pipeline metodologico del PDF consta de dos grandes etapas:
+The final pipeline described in the paper has two major stages:
 
-1. Evaluar un baseline DistilGPT2.
-2. Evaluar las arquitecturas seleccionadas por NAS bajo el mismo protocolo.
+1. Train and evaluate a DistilGPT2 baseline.
+2. Train and evaluate the architectures selected by NAS under the same protocol.
 
-Esto es importante porque da coherencia experimental:
+That makes the comparison methodologically consistent:
 
-- el baseline y los modelos NAS se entrenan/evaluan de manera comparable,
-- y las diferencias pueden atribuirse a la arquitectura.
+- baseline and NAS models are trained and evaluated in comparable ways,
+- and the observed differences can be attributed to the architectures themselves.
 
-### 6.13. Preprocesamiento y entrenamiento
+### 6.13. Preprocessing and Training Setup
 
-El manuscrito indica:
+The manuscript specifies:
 
-- uso de `WikiText2`,
-- agrupamiento por longitud,
-- tokenizacion con tokenizer de DistilGPT2,
-- `500` warmup steps,
-- `weight decay = 0.01`.
+- `WikiText2` as the main dataset,
+- grouping texts by length,
+- tokenization with the DistilGPT2 tokenizer,
+- `500` warm-up steps,
+- `weight decay = 0.01`
 
-Para la evaluacion final:
+For final evaluation:
 
-- se elimina el ultimo `30%` del texto de cada muestra,
-- esa parte se trata como continuacion objetivo,
-- el prefijo restante se usa como entrada,
-- y la salida generada se compara contra la continuacion original.
+- the last `30%` of each sample is removed,
+- that segment becomes the target continuation,
+- the remaining prefix becomes the input,
+- and the generated continuation is compared against the held-out continuation.
 
-## 7. Resultados principales reportados por el PDF
+## 7. Main Results Reported in the Manuscript
 
-### 7.1. Seleccion del baseline DistilGPT2
+### 7.1. DistilGPT2 Baseline Selection
 
-El manuscrito compara checkpoints de DistilGPT2 entrenados con:
+The manuscript compares checkpoints trained for:
 
-- `3` epocas
-- `5` epocas
-- `10` epocas
-- `12` epocas
-- `15` epocas
+- `3` epochs
+- `5` epochs
+- `10` epochs
+- `12` epochs
+- `15` epochs
 
-Segun la tabla del paper:
+According to the reported table:
 
-- el checkpoint de `3` epocas obtiene el mejor `METEOR` promedio: `0.6961`,
-- y no presenta diferencias estadisticamente significativas en los indicadores de hardware frente a checkpoints posteriores.
+- the `3`-epoch checkpoint reaches the highest average `METEOR`: `0.6961`,
+- and later checkpoints do not show statistically significant hardware advantages.
 
-Por eso se selecciona como baseline final.
+That is why the `3`-epoch checkpoint is selected as the final baseline.
 
-### 7.2. Configuraciones de busqueda
+### 7.2. Search Configurations
 
-El PDF reporta cuatro configuraciones para cada algoritmo, variando:
+The paper reports four configurations for each algorithm, varying:
 
-- numero de experimentos,
-- generaciones,
-- tamaño de poblacion `µ`,
-- auto-adaptacion de `F` en el caso de Lex-MODES.
+- number of experiments,
+- generation budget,
+- population size `µ`,
+- and self-adaptation of `F` in the case of Lex-MODES.
 
-Las configuraciones pequeñas son exploratorias y las grandes empujan una exploracion mas extensa del espacio.
+The smaller configurations act as exploratory regimes, while the larger ones encourage broader search.
 
-### 7.3. Comportamiento de SMS-EMOA
+### 7.3. Behavior of SMS-EMOA
 
-El manuscrito concluye que `SMS-EMOA`:
+According to the paper, `SMS-EMOA`:
 
-- tendio a permanecer en una region compacta del espacio,
-- recupero arquitecturas pequenas,
-- y concentro la variacion en ajustes de dropout y, ocasionalmente, de cabezas de atencion.
+- remained largely confined to a compact region of the space,
+- repeatedly recovered small architectures,
+- and concentrated most variation on dropout and, sometimes, the number of attention heads.
 
-Es decir, fue bueno encontrando soluciones compactas, pero con diversidad estructural limitada.
+That means it was good at finding compact solutions, but with limited structural diversity.
 
-### 7.4. Comportamiento de Lex-MODES
+### 7.4. Behavior of Lex-MODES
 
-Segun el PDF, `Lex-MODES` mostro dos grandes regimenes:
+The manuscript reports two main regimes for `Lex-MODES`:
 
-- un atractor compacto alrededor de `[8, 512, 48, 4, 0, 0, 0]`,
-- y un atractor de alta capacidad alrededor de `[128, 512, 48, 64, 0, 0.30, 0]`.
+- a compact attractor around `[8, 512, 48, 4, 0, 0, 0]`,
+- and a high-capacity attractor around `[128, 512, 48, 64, 0, 0.30, 0]`.
 
-Esto sugiere que al aumentar el presupuesto de busqueda cambia el tipo de trade-off dominante que el algoritmo favorece.
+This suggests that increasing the search budget changes the dominant trade-off regime that the optimizer prefers.
 
-### 7.5. Diversidad limitada
+### 7.5. Limited Diversity
 
-Aunque se probaron ocho configuraciones en total, el PDF reporta solo `6` mejores arquitecturas unicas.
+Even though eight configurations were evaluated overall, the paper reports only `6` unique best architectures.
 
-Esa baja diversidad se interpreta como una limitacion del framework actual y el propio manuscrito propone varias causas:
+The manuscript interprets that low diversity as a limitation of the current setup and mentions several possible causes:
 
-- ausencia de mecanismos explicitos de preservacion de diversidad,
-- diseño del punto de referencia del hipervolumen,
-- expresividad limitada de la codificacion,
-- y, para Lex-MODES, la propia presion lexicografica hacia eficiencia.
+- absence of explicit diversity-preservation mechanisms,
+- hypervolume reference-point design,
+- limited expressive power of the encoding,
+- and, for Lex-MODES, the lexicographic pressure toward efficiency.
 
-### 7.6. Modelos retenidos para comparacion final
+### 7.6. Final Models Retained for Comparison
 
-El paper conserva para comparacion final:
+The paper keeps the following models for final comparison:
 
-- el baseline DistilGPT2,
-- `Model 1`: solucion compacta recurrente de Lex-MODES,
-- `Model 2`: solucion recurrente de alta capacidad en Lex-MODES,
-- `Model 3`: solucion ligera representativa de SMS-EMOA,
-- `Model 4`: candidata intermedia de complejidad media.
+- the DistilGPT2 baseline,
+- `Model 1`: a recurrent compact Lex-MODES solution,
+- `Model 2`: a recurrent high-capacity Lex-MODES solution,
+- `Model 3`: a representative lightweight SMS-EMOA solution,
+- `Model 4`: an intermediate-complexity Lex-MODES candidate.
 
-### 7.7. Comparacion final de calidad y hardware
+### 7.7. Final Comparison: Quality and Hardware
 
-El PDF reporta:
+The manuscript reports:
 
-- baseline DistilGPT2 (3 epocas): `METEOR = 0.6961`
+- DistilGPT2 baseline (3 epochs): `METEOR = 0.6961`
 - Model 1: `0.7200`
 - Model 2: `0.7000`
 - Model 3: `0.7000`
 - Model 4: `0.7000`
 
-Interpretacion del manuscrito:
+The paper’s interpretation is:
 
-- Todos los modelos NAS mejoran al baseline en METEOR.
-- `Model 1` es el mejor semanticamente, pero el menos atractivo en varios indicadores de hardware.
-- `Model 2` es el mejor en eficiencia hardware real.
-- `Model 4` ofrece el compromiso mas equilibrado.
+- all NAS models outperform the baseline in `METEOR`,
+- `Model 1` is semantically strongest but hardware-wise less attractive,
+- `Model 2` is the strongest hardware-oriented result,
+- `Model 4` is the most balanced compromise.
 
-### 7.8. Hallazgo conceptual clave
+### 7.8. Main Conceptual Finding
 
-El hallazgo mas importante del paper es que:
+One of the most important findings is that:
 
-- minimizar parametros ayuda,
-- pero no basta para predecir eficiencia real de despliegue.
+- minimizing parameter count helps,
+- but it is not enough to characterize real deployment efficiency.
 
-Dos arquitecturas competitivas en el espacio `METEOR + parameter count` pueden comportarse de manera muy distinta en memoria, CPU, GPU y potencia.
+Two architectures can look similarly competitive in the `METEOR + parameter count` search space and still behave very differently in memory usage, CPU demand, GPU utilization, and power consumption.
 
-Ese punto explica por que el proyecto incluye herramientas de medicion sobre Jetson: no son accesorias, son parte de la validacion del planteamiento.
+That is exactly why the Jetson measurement tooling is important in this repository.
 
-## 8. Conclusiones de investigacion segun el PDF
+## 8. Conclusions from the Manuscript
 
-El manuscrito concluye que:
+The manuscript concludes that:
 
-1. NAS puede adaptarse con exito a generacion de texto.
-2. El framework propuesto recupera trade-offs utiles entre calidad semantica y eficiencia.
-3. Las arquitecturas NAS superan al baseline en METEOR.
-4. Algunas arquitecturas tambien mejoran sustancialmente el perfil de hardware.
-5. El framework actual aun tiene dos debilidades grandes:
-   - usar solo numero de parametros como proxy de eficiencia,
-   - y explorar una porcion relativamente estrecha del espacio.
+1. NAS can be adapted successfully to text generation.
+2. The proposed framework recovers useful trade-offs between semantic quality and efficiency.
+3. The selected NAS architectures outperform the baseline in `METEOR`.
+4. Some candidates also improve deployment-oriented hardware profiles substantially.
+5. The current framework still has two major limitations:
+   - using parameter count as the only search-time efficiency proxy,
+   - and exploring only a relatively narrow portion of the space.
 
-Las lineas de trabajo futuro propuestas por el paper incluyen:
+The manuscript proposes several future directions:
 
-- codificaciones arquitectonicas mas ricas,
-- mecanismos de diversidad mas fuertes,
-- objetivos hardware-aware explicitos,
+- richer architectural encodings,
+- stronger diversity mechanisms,
+- explicit hardware-aware objectives,
 - pruning,
 - quantization,
 - mixed precision,
 - distillation,
-- validacion en mas datasets y tareas.
+- validation on more datasets and tasks.
 
-## 9. Relacion entre la investigacion y el repositorio
+## 9. How the Research Maps to This Repository
 
-El repositorio refleja casi todo el pipeline experimental del manuscrito, aunque en un formato de trabajo de investigacion mas que de paquete de software productizado.
+The repository reflects almost the entire experimental pipeline from the manuscript, although in the form of a research workspace rather than a polished software package.
 
-En lugar de una libreria modular con `src/`, `tests/` y `configs/`, aqui hay una mezcla de:
+Instead of a modular library with `src/`, `tests/`, and `configs/`, this project contains a mixture of:
 
-- notebooks de exploracion,
-- scripts de evaluacion,
-- checkpoints entrenados,
-- datasets crudos y procesados,
-- resultados y graficas,
-- documentos auxiliares.
+- exploratory notebooks,
+- evaluation scripts,
+- trained checkpoints,
+- raw and processed datasets,
+- results and plots,
+- supporting documents.
 
-Eso es coherente con un proyecto academico en evolucion.
+That is consistent with an academic research repository in active development.
 
-## 10. Organizacion actual del repositorio
+## 10. Current Repository Organization
 
-Despues de la reorganizacion fisica, el repositorio queda conceptualmente asi:
+After the structural reorganization, the repository looks conceptually like this:
 
 ```text
 nas4textgen/
@@ -475,8 +482,8 @@ nas4textgen/
 │   ├── modeling/
 │   └── optimization/
 ├── scripts/
-│   └── jetson/
-├── datasets/
+│   ├── jetson/
+│   └── release/
 ├── models/
 ├── results/
 ├── README.md
@@ -485,16 +492,16 @@ nas4textgen/
 
 ### 10.1. `docs/`
 
-Esta carpeta contiene documentacion humana y reportes.
+This directory contains human-readable documentation and reports.
 
 #### `docs/reference/`
 
-- [nas4textgen.pdf](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reference/nas4textgen.pdf:1): manuscrito principal del proyecto. Es la referencia mas importante para entender la motivacion, metodologia, experimentos y conclusiones.
+- [nas4textgen.pdf](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reference/nas4textgen.pdf:1): the main research manuscript. It is the most important single reference for understanding the motivation, methodology, experiments, and conclusions.
 
 #### `docs/reports/`
 
-- [model-characterization.docx](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reports/model-characterization.docx:1): caracterizacion de modelos NAS y configuraciones.
-- [nas-results.docx](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reports/nas-results.docx:1): resumen/reportes de corridas NAS, configuraciones y salidas visuales o analiticas.
+- [model-characterization.docx](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reports/model-characterization.docx:1): characterization notes for NAS models and configurations.
+- [nas-results.docx](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reports/nas-results.docx:1): summaries of NAS runs, configurations, and reported outputs.
 
 #### `docs/jetson/`
 
@@ -502,11 +509,11 @@ Esta carpeta contiene documentacion humana y reportes.
 - [cons.docx](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/jetson/cons.docx:1)
 - [cons2.docx](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/jetson/cons2.docx:1)
 
-Estos archivos parecen ser bitacoras o notas operativas del entorno Jetson, incluyendo instalacion de paquetes y comandos de sistema. No son parte del pipeline cientifico principal, pero si documentan el entorno experimental real.
+These files appear to be Jetson environment notes, including package installation history and system-level setup commands. They are not part of the scientific contribution itself, but they document the real experimental environment.
 
 ### 10.2. `notebooks/`
 
-Aqui vive la mayor parte del trabajo exploratorio y experimental.
+This is where most exploratory and experimental work lives.
 
 #### `notebooks/data-prep/`
 
@@ -524,51 +531,47 @@ Aqui vive la mayor parte del trabajo exploratorio y experimental.
 
 ### 10.3. `scripts/`
 
-Contiene scripts mas reutilizables o mas cerca de ejecucion directa fuera de notebook.
+This directory holds reusable scripts or workflows closer to direct execution than notebook exploration.
 
 #### `scripts/jetson/`
 
 - [jtop_stats.py](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/jetson/jtop_stats.py:1)
 - [test_distilgpt2.py](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/jetson/test_distilgpt2.py:1)
 
-### 10.4. `datasets/`
+#### `scripts/release/`
 
-Contiene datasets crudos y procesados. Esta carpeta es masiva y no deberia versionarse en Git tradicional.
+- [package_release_assets.sh](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/release/package_release_assets.sh:1)
+- [upload_release_assets.sh](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/release/upload_release_assets.sh:1)
 
-Estructura observada:
+These release scripts were added to distribute large models and results through `GitHub Releases` rather than Git commits or `Git LFS`.
 
-- `datasets/raw/cola`
-- `datasets/raw/spanish_corpora`
-- `datasets/wikitext-2/raw`
-- `datasets/wikitext-2/processed`
+### 10.4. `models/`
 
-### 10.5. `models/`
+This directory contains:
 
-Contiene:
+- base DistilGPT2 checkpoints,
+- tokenizer assets,
+- ONNX exports,
+- NAS-trained models,
+- surrogate-model artifacts.
 
-- checkpoints base de DistilGPT2,
-- exportaciones ONNX,
-- tokenizer,
-- modelos NAS entrenados,
-- modelos del surrogate.
-
-Estructura observada:
+Observed structure:
 
 - `models/distil-gpt2/base`
 - `models/distil-gpt2/nas/trained-models`
 - `models/surrogate-models/models`
 
-### 10.6. `results/`
+### 10.5. `results/`
 
-Almacena:
+This directory stores:
 
 - plots,
-- resultados de NAS,
-- resultados de surrogate,
-- resultados de generacion de texto,
-- resumentes/modelos serializados.
+- NAS outputs,
+- surrogate-model results,
+- text-generation outputs,
+- serialized summaries of best models and search artifacts.
 
-Estructura observada:
+Observed structure:
 
 - `results/models`
 - `results/nas/evo-strat/smsemoa`
@@ -577,40 +580,40 @@ Estructura observada:
 - `results/text-gen/distil-gpt2/base`
 - `results/text-gen/distil-gpt2/nas`
 
-## 11. Descripcion detallada de los notebooks
+## 11. Detailed Notebook Overview
 
 ### 11.1. `dataset-processing.ipynb`
 
-Este notebook parece cumplir una funcion de preparacion de datos temprana o auxiliar.
+This notebook appears to handle early or auxiliary data preparation work.
 
-Por sus encabezados, cubre:
+From its headings, it covers:
 
-- dataset `CoLA`,
-- lectura de archivos `.tsv`,
-- limpieza de caracteres,
-- tokenizacion,
-- construccion de representacion numerica,
-- procesamiento de corpus en español.
+- the `CoLA` dataset,
+- reading `.tsv` files,
+- special-character cleanup,
+- tokenization,
+- building a numeric representation,
+- processing Spanish corpora.
 
-Tecnologias e ideas visibles:
+Visible technologies:
 
 - `csv`
 - `re`
 - `nltk`
-- `Tokenizer` de `tensorflow.keras`
+- `tensorflow.keras.preprocessing.text.Tokenizer`
 - `os`
 
-Interpretacion:
+Interpretation:
 
-- Este notebook parece anterior o paralelo a la parte principal de DistilGPT2.
-- Sugiere que el proyecto paso por una fase de exploracion mas general sobre preprocesamiento de texto.
-- La presencia de `CoLA` y corpus en español indica que el repositorio conserva materiales que ayudaron a construir intuicion o pipelines previos, aunque el paper final se centra en `WikiText2` y generacion de texto sobre arquitectura inspirada en DistilGPT2.
+- this notebook likely predates or complements the main DistilGPT2 pipeline,
+- it shows a broader text-processing exploration phase,
+- and it indicates that the repository preserves materials from earlier or parallel experimentation beyond the final paper scope.
 
 ### 11.2. `transformers-environment.ipynb`
 
-Este notebook parece ser una pieza temprana de experimentacion para construir un modelo de generacion de texto.
+This notebook appears to belong to an early experimentation phase for building a text-generation model environment.
 
-Encabezados observados:
+Observed headings:
 
 - `Text generation model`
 - `Data preparation`
@@ -619,24 +622,25 @@ Encabezados observados:
 - `Training the model`
 - `Testing and saving the model`
 
-Tecnologias visibles:
+Visible technologies:
 
 - `torch`
 - `numpy`
 - `matplotlib`
-- `Tokenizer` de `tensorflow.keras`
-- tokenizacion con `nltk`
+- `tensorflow.keras.preprocessing.text.Tokenizer`
+- `nltk`
 
-Interpretacion:
+Interpretation:
 
-- Parece documentar una fase inicial en la que se explora la construccion de un modelo generativo y su entorno.
-- Es util para entender la evolucion del proyecto, aunque probablemente no sea el pipeline final reportado en el paper.
+- it documents an earlier generative-model setup workflow,
+- and it is useful for understanding how the project evolved,
+- even if it does not represent the final pipeline exactly as reported in the paper.
 
 ### 11.3. `model-testing.ipynb`
 
-Este notebook se alinea fuertemente con la evaluacion del baseline y posiblemente con la comparacion entre checkpoints/modelos.
+This notebook aligns closely with baseline evaluation and likely checkpoint comparison.
 
-Imports visibles:
+Visible imports include:
 
 - `GPT2LMHeadModel`, `GPT2Tokenizer`
 - `datasets.load_dataset`
@@ -646,23 +650,23 @@ Imports visibles:
 - `pickle`
 - `pandas`
 
-Interpretacion funcional:
+Functional interpretation:
 
-- carga modelos GPT2/DistilGPT2,
-- trabaja con datasets y estratificacion,
-- probablemente calcula metricas de comparacion y guarda resultados,
-- parece conectado con la seleccion del baseline descrita en el PDF.
+- loads GPT2 or DistilGPT2 models,
+- works with datasets and stratification,
+- likely computes comparison metrics and stores results,
+- and seems closely connected to the baseline-selection stage described in the manuscript.
 
 ### 11.4. `surrogate-models.ipynb`
 
-Este notebook esta directamente ligado a la seccion de `Model-based Evaluation` del manuscrito.
+This notebook is directly connected to the `Model-based Evaluation` section of the manuscript.
 
-Cabeceras visibles:
+Visible headings:
 
 - `S_model`
 - `FLOPs`
 
-Imports relevantes:
+Relevant imports:
 
 - `SVR`
 - `XGBRegressor`
@@ -670,24 +674,24 @@ Imports relevantes:
 - `RandomForestRegressor`
 - `StandardScaler`
 - `pearsonr`, `spearmanr`
-- `qmc` para muestreo
+- `qmc`
 - `thop.profile`
 - `baycomp`
 
-Interpretacion:
+Interpretation:
 
-- implementa el entrenamiento y evaluacion comparativa de los candidatos a predictor,
-- probablemente carga el dataset de arquitecturas y scores desde `models/surrogate-models/data.txt`,
-- calcula metricas de error y correlacion,
-- y respalda la decision de seleccionar `MLP` como predictor principal.
+- it implements training and evaluation of the surrogate candidates,
+- it likely loads the architecture-score dataset from `models/surrogate-models/data.txt`,
+- it computes error and correlation metrics,
+- and it supports the manuscript’s decision to choose `MLP` as the main predictor.
 
-Es uno de los notebooks mas cercanos a la contribucion metodologica central del paper.
+This is one of the notebooks most closely tied to the central methodological contribution of the project.
 
 ### 11.5. `smsmodes.ipynb`
 
-Este es probablemente el notebook mas importante del proyecto desde el punto de vista de NAS.
+This is likely the most important notebook in the repository from the NAS perspective.
 
-Cabeceras observadas:
+Observed headings:
 
 - `S-Metric Selection Multi Objective Differential Evolution Strategy`
 - `NAS`
@@ -699,7 +703,7 @@ Cabeceras observadas:
 - `Search process`
 - `Config 1`
 
-Imports relevantes:
+Relevant imports:
 
 - `deap.tools.sortNondominated`
 - `scipy.stats.qmc`
@@ -709,171 +713,144 @@ Imports relevantes:
 - `torch.profiler`
 - `imageio`, `PIL`
 
-Interpretacion:
+Interpretation:
 
-- implementa el loop de busqueda NAS,
-- incluye las utilidades para representar arquitecturas,
-- integra el surrogate para predecir METEOR,
-- estima numero de parametros,
-- ejecuta el proceso evolutivo,
-- y probablemente genera salidas para visualizacion de Pareto fronts, GIFs y progreso evolutivo.
+- it implements the NAS loop,
+- includes candidate representation logic,
+- integrates the surrogate predictor,
+- estimates parameter count,
+- runs the evolutionary search,
+- and likely generates outputs for Pareto fronts, GIFs, convergence plots, and related analysis.
 
-Este notebook es la pieza que mejor corresponde al corazon del framework descrito en el PDF.
+This notebook maps most directly to the methodological core described in the manuscript.
 
-## 12. Descripcion detallada de los scripts de Jetson
+## 12. Detailed Jetson Script Overview
 
 ### 12.1. `jtop_stats.py`
 
-El script [jtop_stats.py](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/jetson/jtop_stats.py:1) encapsula recoleccion de metricas de hardware usando la libreria `jtop`.
+The script [jtop_stats.py](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/jetson/jtop_stats.py:1) wraps hardware measurement through the `jtop` library.
 
-Funciones practicas del script:
+Its practical responsibilities include:
 
-- leer potencia, memoria, CPU y GPU del sistema Jetson,
-- calcular deltas temporales,
-- suavizar medidas para evitar picos espurios,
-- resumir historicos,
-- y volcar resultados a archivo.
+- reading power, memory, CPU, and GPU statistics from Jetson,
+- computing deltas over time,
+- smoothing noisy measurements,
+- summarizing histories,
+- and dumping those values to files.
 
-Tipos de metricas que maneja:
+Handled metrics include:
 
-- voltaje, corriente y potencia promedio,
-- RAM usada, libre, cache y compartida,
-- frecuencia por nucleo de CPU,
-- carga y frecuencia de GPU.
+- voltage, current, and average power,
+- used, free, cached, and shared RAM,
+- per-core CPU frequency,
+- GPU load and frequency.
 
-Este script conecta directamente con la parte del manuscrito donde se reportan mediciones de:
+This script directly supports the hardware-oriented evaluation reported in the manuscript:
 
 - power consumption,
 - memory usage,
 - GPU utilization,
 - CPU frequency.
 
-Es decir, no es una utilidad secundaria; es parte del mecanismo que permite pasar de un proxy barato de eficiencia a una evaluacion mas fiel de comportamiento de despliegue.
+It is therefore part of the experimental validation, not just an auxiliary utility.
 
 ### 12.2. `test_distilgpt2.py`
 
-El script [test_distilgpt2.py](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/jetson/test_distilgpt2.py:1) parece orientado a:
+The script [test_distilgpt2.py](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/scripts/jetson/test_distilgpt2.py:1) appears to be designed to:
 
-- cargar multiples checkpoints de DistilGPT2,
-- generar texto sobre un dataset,
-- comparar las continuaciones generadas contra referencias,
-- calcular metricas NLP,
-- y cruzar eso con datos de hardware del entorno Jetson.
+- load multiple DistilGPT2 checkpoints,
+- generate text from a dataset,
+- compare generated continuations against references,
+- compute NLP metrics,
+- and combine those with hardware measurements collected on Jetson.
 
-Elementos funcionales visibles:
+Visible functional elements include:
 
-- corte del ultimo 30 por ciento del texto para formar el objetivo,
-- generacion autoregresiva,
-- calculo de `BLEU`, `GLEU`, `METEOR`, `ROUGE-1`, `ROUGE-2`, `ROUGE-L`,
-- lectura y agregacion de metricas,
-- visualizaciones con `matplotlib` y `seaborn`.
+- cutting the last 30 percent of each text to build the continuation target,
+- autoregressive generation,
+- computation of `BLEU`, `GLEU`, `METEOR`, `ROUGE-1`, `ROUGE-2`, and `ROUGE-L`,
+- aggregation and plotting of runtime metrics.
 
-Eso coincide con el protocolo descrito en el PDF para:
+That matches the final evaluation protocol described in the manuscript:
 
-- usar el prefijo como entrada,
-- tratar el tramo final como continuacion objetivo,
-- y medir calidad semantica de la salida.
+- use the prefix as input,
+- hold out the last segment as the target continuation,
+- and score the output semantically.
 
-Observacion importante:
+Important observation:
 
-- el script parece conservar rutas historicas como `models/distilgpt2/...`, mientras en el repo reorganizado existe `models/distil-gpt2/...`.
-- tambien importa `jtop_stats` de una forma que probablemente requiera ajuste para ejecutarse hoy sin modificar `PYTHONPATH`.
+- the script still seems to contain legacy paths such as `models/distilgpt2/...`, while the reorganized repository uses `models/distil-gpt2/...`.
+- it also imports `jtop_stats` in a way that may require path adjustments to run cleanly today.
 
-Eso no invalida su valor documental, pero indica que el repositorio aun mezcla material experimental con distinto nivel de madurez.
+That does not reduce its documentary value, but it does show that the repository still contains experimental code at different maturity levels.
 
-## 13. Datasets del proyecto
+## 13. Datasets Used in the Project
+
+The repository previously contained large datasets, but they were removed from the local tree to save disk space and because the current publication strategy focuses on models and results rather than raw data distribution.
+
+From the remaining notebooks and manuscript, the important datasets were:
 
 ### 13.1. `WikiText2`
 
-Es el dataset principal de la investigacion reportada en el PDF.
+This is the main dataset in the published research workflow.
 
-Se usa para:
+It is used to:
 
-- entrenar el baseline DistilGPT2,
-- entrenar las arquitecturas muestreadas para construir el dataset del predictor,
-- y evaluar modelos con el protocolo de continuacion de texto.
-
-En el repo aparecen:
-
-- datos crudos en `datasets/wikitext-2/raw`
-- datos procesados en `datasets/wikitext-2/processed`
-
-La existencia de varios archivos `.pkl` procesados sugiere diferentes configuraciones de longitud maxima, por ejemplo `256`, `512`, `1024`, `2048`.
+- train the DistilGPT2 baseline,
+- train the sampled architectures used to build the surrogate dataset,
+- evaluate text-generation quality under the continuation protocol.
 
 ### 13.2. `CoLA`
 
-`datasets/raw/cola` contiene archivos del corpus CoLA.
+The repository also contains evidence of experiments involving the `CoLA` dataset, especially in earlier data-processing notebooks.
 
-Aunque el paper final no se centra en CoLA, este material parece haber servido para etapas exploratorias o para notebooks de preprocesamiento y modelado previos.
+### 13.3. Spanish Corpora
 
-### 13.3. Corpus en español
+The notebooks also reference large Spanish corpora from multiple sources, indicating that the project preserved a wider text-processing exploration phase beyond the exact final paper pipeline.
 
-`datasets/raw/spanish_corpora` contiene varios archivos de texto grandes:
+## 14. Stored Models
 
-- `UN.txt`
-- `TED.txt`
-- `ParaCrawl.txt`
-- `OpenSubtitles2018.txt`
-- `NewsCommentary11.txt`
-- `multiUN.txt`
-- `JRC.txt`
-- `GlobalVoices.txt`
-- `Europarl.txt`
-- `EUBookShop.txt`
-- `EMEA.txt`
-- `ECB.txt`
-- `DOGC.txt`
-- `DGT.txt`
-- `all_wikis.txt`
+### 14.1. Base DistilGPT2 Models
 
-Interpretacion:
+Inside `models/distil-gpt2/base`, the repository stores:
 
-- estos datos no parecen estar en el centro del experimento final del paper,
-- pero muestran que el proyecto o su fase preparatoria tuvo interes en corpora multifuente y posiblemente en escenarios de texto en español.
+- tokenizer files,
+- checkpoints organized by training epochs,
+- ONNX exports.
 
-## 14. Modelos almacenados en el repositorio
+This corresponds to the part of the project devoted to:
 
-### 14.1. Modelos base de DistilGPT2
+- training baseline variants,
+- selecting a reference checkpoint,
+- and exploring deployable model exports.
 
-En `models/distil-gpt2/base` hay:
+### 14.2. NAS-trained Models
 
-- tokenizer,
-- checkpoints por numero de epocas,
-- exportaciones ONNX.
+Inside `models/distil-gpt2/nas/trained-models`, there is a large collection of directories named after encoded architectures.
 
-Esto refleja la parte del proyecto dedicada a:
+That matches the core NAS logic:
 
-- elegir baseline,
-- entrenar variantes base,
-- y posiblemente probar opciones de despliegue.
+- encode an architecture,
+- decode and instantiate it,
+- train it,
+- store the resulting model.
 
-### 14.2. Modelos NAS entrenados
+These directories are material evidence of the explored NAS candidates.
 
-En `models/distil-gpt2/nas/trained-models` existe una gran coleccion de carpetas, cada una asociada a una arquitectura codificada en su nombre.
+### 14.3. Surrogate Artifacts
 
-Eso coincide con la idea del proyecto:
-
-- una arquitectura se representa como una tupla de valores,
-- se reconstruye como modelo,
-- se entrena,
-- y se guarda.
-
-Estas carpetas parecen ser evidencia material del proceso de exploracion y evaluacion de candidatos NAS.
-
-### 14.3. Modelos del surrogate
-
-En `models/surrogate-models/models` se observan artefactos como:
+Inside `models/surrogate-models/models`, artifacts such as:
 
 - `scaler.pkl`
 - `mlp_reg.pkl`
 
-Eso corresponde de forma directa a la etapa de evaluacion model-based descrita en el paper.
+directly correspond to the model-based evaluation stage described in the manuscript.
 
-## 15. Resultados almacenados
+## 15. Stored Results
 
-### 15.1. Resultados de surrogate
+### 15.1. Surrogate Results
 
-`results/surrogate-models/plots` contiene graficas comparativas entre regresores en metricas como:
+`results/surrogate-models/plots` contains comparative plots for regressors across metrics such as:
 
 - `MAE`
 - `MAPE`
@@ -883,145 +860,137 @@ Eso corresponde de forma directa a la etapa de evaluacion model-based descrita e
 - `Pearson`
 - `Spearman`
 
-Esto es practicamente la contraparte visual de la seccion del PDF donde se selecciona el `MLP Regressor`.
+This is the visual counterpart of the predictor-selection section in the manuscript.
 
-### 15.2. Resultados de modelos base y NAS
+### 15.2. Baseline and NAS Model Results
 
-`results/models` contiene:
+`results/models` contains:
 
-- plots como `loss_vs_epoch`, `epochs_vs_bleu`, `epochs_vs_meteor`, etc.
-- artefactos serializados como `best_models.pkl`, `all_best_fitness.pkl`, `F_arr.pkl`.
+- plots such as `loss_vs_epoch`, `epochs_vs_bleu`, `epochs_vs_meteor`, and related summaries,
+- serialized artifacts such as `best_models.pkl`, `all_best_fitness.pkl`, and `F_arr.pkl`.
 
-Esto parece documentar:
+These results appear to document:
 
-- evolucion de entrenamiento,
-- comparacion entre checkpoints,
-- y seleccion/caracterizacion de mejores modelos.
+- training behavior,
+- checkpoint comparisons,
+- and selection/characterization of best architectures.
 
-### 15.3. Resultados de NAS
+### 15.3. NAS Search Results
 
-`results/nas` y en particular `results/nas/evo-strat` parecen contener las salidas de los algoritmos evolutivos:
+`results/nas` and especially `results/nas/evo-strat` appear to store outputs from the evolutionary search itself:
 
-- experimentos de `smsemoa`,
-- experimentos de `smsmodes`,
-- posiblemente frentes de Pareto, progreso de hipervolumen, convergencia y evolucion de `F`.
+- experiments for `smsemoa`,
+- experiments for `smsmodes`,
+- and likely Pareto-front, hypervolume, convergence, and `F` evolution outputs.
 
-Eso coincide punto por punto con las figuras y descripciones del manuscrito.
+This maps directly to the figures and discussion in the manuscript.
 
-### 15.4. Resultados de generacion de texto
+### 15.4. Text-generation Results
 
-`results/text-gen/distil-gpt2/base` y `results/text-gen/distil-gpt2/nas` contienen textos de salida generados por modelos base y NAS.
+`results/text-gen/distil-gpt2/base` and `results/text-gen/distil-gpt2/nas` store text-generation outputs from baseline and NAS models.
 
-Estos resultados ayudan a:
+These are useful for:
 
-- auditar cualitativamente el comportamiento del modelo,
-- rastrear experimentos,
-- y respaldar el calculo de metricas.
+- qualitative inspection,
+- experiment traceability,
+- and support for metric computation.
 
-## 16. Flujo de trabajo end-to-end inferido del proyecto
+## 16. Inferred End-to-End Workflow
 
-Integrando PDF, notebooks, scripts y carpetas, el flujo general del proyecto parece ser este:
+Putting the manuscript, notebooks, scripts, and artifact layout together, the overall workflow of the project appears to be:
 
-1. Preparar datasets y tokenizacion.
-2. Entrenar y evaluar checkpoints base de DistilGPT2.
-3. Seleccionar un baseline.
-4. Muestrear arquitecturas del espacio de busqueda.
-5. Entrenarlas completamente para construir el dataset del surrogate.
-6. Ajustar y comparar varios regresores.
-7. Seleccionar el mejor predictor.
-8. Ejecutar NAS con `SMS-EMOA` y `Lex-MODES`, usando:
-   - predictor para estimar METEOR,
-   - conteo de parametros para eficiencia.
-9. Retener arquitecturas representativas de los principales regimenes encontrados.
-10. Entrenar esas arquitecturas seleccionadas.
-11. Evaluarlas con el mismo protocolo del baseline.
-12. Medir comportamiento de hardware en Jetson.
-13. Comparar semanticamente y en eficiencia real.
-14. Redactar resultados y conclusiones.
+1. Prepare datasets and tokenization.
+2. Train and evaluate DistilGPT2 baseline checkpoints.
+3. Select a baseline checkpoint.
+4. Sample architectures from the search space.
+5. Train those architectures fully to build the surrogate dataset.
+6. Fit and compare surrogate regressors.
+7. Select the best predictor.
+8. Run NAS with `SMS-EMOA` and `Lex-MODES`, using:
+   - a predictor for `METEOR`,
+   - parameter count for efficiency.
+9. Retain architectures representing the main recovered trade-off regimes.
+10. Train those selected architectures.
+11. Evaluate them under the same protocol as the baseline.
+12. Measure hardware behavior on Jetson.
+13. Compare semantic quality and deployment-oriented behavior.
+14. Report conclusions in manuscript and supporting documents.
 
-## 17. Estado del repositorio como artefacto de investigacion
+## 17. Repository State as a Research Artifact
 
-Este repo funciona bien como archivo de investigacion, pero no todavia como paquete reproducible listo para terceros.
+This repository works well as a research archive, but not yet as a polished reproducible software package.
 
-Fortalezas:
+Strengths:
 
-- contiene el manuscrito principal,
-- conserva notebooks y scripts clave,
-- almacena resultados, modelos y trazas suficientes para respaldar la investigacion,
-- y documenta tanto la parte algoritmica como la parte hardware.
+- it contains the main manuscript,
+- it preserves key notebooks and scripts,
+- it stores models, plots, and outputs that support the research,
+- and it documents both the algorithmic and hardware-oriented parts of the work.
 
-Debilidades:
+Weaknesses:
 
-- hay dependencia fuerte de notebooks,
-- existen rutas historicas y referencias heredadas,
-- no se observa un sistema unico de configuracion reproducible,
-- faltan manifiestos claros de dependencias,
-- y el volumen de artefactos pesados dificulta la colaboracion por Git.
+- there is strong notebook dependence,
+- some scripts and paths are still historical,
+- there is no single reproducibility entry point,
+- dependencies are not yet consolidated into one canonical environment specification,
+- and the volume of heavy artifacts makes Git-based collaboration difficult.
 
-## 18. Observaciones tecnicas sobre organizacion y mantenibilidad
+## 18. Organizational and Maintainability Observations
 
-### 18.1. Lo que esta bien separado ahora
+### 18.1. What Is Already Better Organized
 
-La reorganizacion actual ya distingue razonablemente entre:
+The current repository structure clearly separates:
 
-- documentacion,
+- documentation,
 - notebooks,
 - scripts,
-- datasets,
-- modelos,
-- resultados.
+- models,
+- results.
 
-Eso mejora mucho la navegacion del proyecto.
+That already improves navigation substantially.
 
-### 18.2. Lo que sigue mezclado conceptualmente
+### 18.2. What Is Still Conceptually Mixed
 
-Todavia hay mezcla entre:
+There is still some blending between:
 
-- artefactos finales del paper,
-- exploraciones tempranas,
-- pruebas de entorno,
-- y codigo ejecutable.
+- final paper artifacts,
+- early exploratory work,
+- environment notes,
+- and executable code.
 
-Eso es normal en un proyecto academico, pero conviene explicitarlo. Este documento justamente ayuda a eso.
+That is common in academic projects, but it is worth documenting explicitly.
 
-### 18.3. Lo que convendria modularizar a futuro
+### 18.3. What Would Be Worth Modularizing Later
 
-Si en algun momento quieres convertir esto en un repositorio mas reproducible o publicable, tendria sentido separar:
+If the project is ever turned into a more reproducible or public-facing software package, it would make sense to split it into:
 
-- `src/` con codigo reusable de NAS, surrogate y evaluacion,
-- `configs/` con experimentos y parametros,
-- `notebooks/` solo como exploracion o visualizacion,
-- `artifacts/` o almacenamiento externo para pesos y resultados.
+- `src/` for reusable NAS, surrogate, and evaluation code,
+- `configs/` for experiment definitions,
+- `notebooks/` for exploration and visualization only,
+- `artifacts/` or external storage for large binary outputs.
 
-## 19. Tamaño del repositorio y recomendacion de versionado
+## 19. Repository Size and Distribution Strategy
 
-El arbol actual es enorme:
+The remaining heavy artifact tree is large:
 
-- `datasets/` ronda `20G`
-- `models/` ronda `49G`
-- `results/` ronda `8.5G`
+- `models/` is roughly `49G`
+- `results/` is roughly `8.5G`
 
-Implicaciones:
+Implications:
 
-- Git tradicional no es buena opcion para esto.
-- Aunque algunos hosts permitan grandes repositorios, la experiencia de clonacion, diff y mantenimiento se degrada mucho.
-- El riesgo de llegar a limites practicos de almacenamiento y transferencia es alto.
+- Git is not the right place for direct binary versioning at this scale.
+- Even when hosting is possible, cloning, diffing, and maintenance become inefficient.
+- Transfer and storage overhead quickly become unnecessary.
 
-Por eso el repo ya incluye `.gitignore` para excluir:
+For that reason, the repository now uses `.gitignore` and release scripts to:
 
-- `datasets/`
-- `models/`
-- `results/`
+- keep the source-oriented repository light,
+- distribute models and results through `GitHub Releases`,
+- and avoid `Git LFS` entirely for this project.
 
-Recomendacion concreta:
+## 20. Most Important Files for New Readers
 
-1. Versionar solo `docs/`, `notebooks/`, `scripts/`, `README.md`, configuraciones y pequenos metadatos.
-2. Mantener datasets, checkpoints y resultados grandes fuera de Git.
-3. Si necesitas rastrear artefactos grandes, usar `Git LFS`, DVC o almacenamiento externo con manifiestos ligeros.
-
-## 20. Que archivos son especialmente importantes
-
-Si alguien nuevo quisiera entender el proyecto rapido, el orden recomendado seria:
+If a new collaborator wants to understand the project quickly, this is a good reading order:
 
 1. [docs/reference/nas4textgen.pdf](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reference/nas4textgen.pdf:1)
 2. [docs/project-documentation.md](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/project-documentation.md:1)
@@ -1033,59 +1002,59 @@ Si alguien nuevo quisiera entender el proyecto rapido, el orden recomendado seri
 8. [docs/reports/nas-results.docx](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reports/nas-results.docx:1)
 9. [docs/reports/model-characterization.docx](/mnt/c/Users/usuario/Documents/GitHub/nas4textgen/docs/reports/model-characterization.docx:1)
 
-## 21. Lectura interpretativa del proyecto
+## 21. High-level Reading of the Project
 
-Mas alla del detalle tecnico, este repo cuenta la historia de una investigacion con varias capas:
+Beyond the implementation details, this repository tells the story of a research effort that combines several layers:
 
-- una capa de NLP y generacion de texto,
-- una capa de NAS evolutivo,
-- una capa de surrogate modeling,
-- y una capa de evaluacion real en hardware restringido.
+- NLP and text generation,
+- evolutionary NAS,
+- surrogate modeling,
+- and real hardware evaluation under constrained deployment conditions.
 
-Esa combinacion es lo que vuelve interesante al proyecto. No es solo "buscar hiperparametros" ni solo "correr DistilGPT2", sino conectar:
+That combination is what makes the project interesting. It is not just about tuning hyperparameters or running DistilGPT2, but about linking:
 
-- diseño automatico de arquitectura,
-- costo computacional,
-- y viabilidad de despliegue.
+- automated architecture design,
+- computational cost,
+- and practical deployability.
 
-El PDF deja claro que esa es la tesis central del trabajo, y el repositorio conserva evidencia de casi todas las etapas necesarias para sostenerla.
+The manuscript makes that thesis explicit, and the repository preserves evidence of nearly every stage required to support it.
 
-## 22. Limitaciones documentales de este repositorio
+## 22. Documentation Limitations of the Current Repository
 
-Aunque el manuscrito es fuerte, el repositorio todavia tiene vacios comunes de proyectos de investigacion:
+Even though the manuscript is strong, the repository still has common research-project gaps:
 
-- no existe una lista consolidada de dependencias exactas,
-- no hay una guia unica de reproduccion paso a paso,
-- no se observan tests automatizados,
-- algunos notebooks y scripts parecen conservar residuos de Colab o rutas antiguas,
-- y hay muchos artefactos que son valiosos como registro, pero ruidosos como software.
+- no single consolidated dependency list,
+- no one-command reproducibility guide,
+- no automated test suite,
+- some notebooks and scripts retain legacy Colab paths or environment assumptions,
+- many artifacts are valuable as records but noisy as software.
 
-Eso no le quita valor academico. Solo significa que la documentacion es especialmente importante para volver navegable el trabajo.
+That does not reduce the project’s academic value. It simply means that documentation is especially important for making the repository navigable.
 
-## 23. Recomendaciones para evolucionar esta documentacion
+## 23. Recommended Documentation Extensions
 
-Este archivo puede crecer en varias direcciones utiles:
+This document could be extended in several useful ways:
 
-1. Agregar una cronologia del proyecto y versiones del manuscrito.
-2. Crear una `reproducibility-guide.md` con comandos exactos y dependencias.
-3. Crear una tabla maestra de modelos NAS retenidos, con arquitectura, parametros, METEOR y metricas hardware.
-4. Crear un glosario de variables del espacio de busqueda.
-5. Crear una guia para reconstruir `results/` sin subir los binarios.
+1. Add a project timeline or revision history.
+2. Add a reproducibility guide with exact commands and dependencies.
+3. Add a master table of retained NAS models, with architecture, parameter count, `METEOR`, and hardware metrics.
+4. Add a glossary for search-space variables.
+5. Add an artifact reconstruction guide for regenerating results without storing all binaries in Git.
 
-## 24. Conclusion general
+## 24. Final Conclusion
 
-`nas4textgen` es un proyecto de investigacion sobre generacion de texto y Neural Architecture Search con una orientacion clara hacia eficiencia y despliegue en hardware restringido. El manuscrito principal demuestra que la propuesta:
+`nas4textgen` is a research project on text generation and Neural Architecture Search with a clear emphasis on efficiency and deployment under constrained hardware conditions. The main manuscript shows that the proposed framework:
 
-- define un espacio de busqueda coherente basado en DistilGPT2,
-- usa evolucion multiobjetivo para explorar compromisos entre calidad y complejidad,
-- reduce el costo de evaluacion con un surrogate model,
-- y consigue arquitecturas que mejoran al baseline en METEOR, con perfiles de hardware distintos y utiles.
+- defines a coherent DistilGPT2-based search space,
+- uses multi-objective evolutionary search to explore trade-offs between quality and complexity,
+- reduces evaluation cost with a surrogate model,
+- and recovers architectures that outperform the chosen baseline in `METEOR`, while exposing different hardware profiles.
 
-El repositorio conserva los componentes materiales de esa investigacion:
+The repository preserves the material components of that work:
 
-- notebooks de preparacion, modelado y optimizacion,
-- scripts de medicion sobre Jetson,
-- datasets, checkpoints y resultados,
-- y documentos de apoyo y reporte.
+- notebooks for preparation, modeling, and optimization,
+- Jetson measurement scripts,
+- trained models and results,
+- and supporting reports and documentation.
 
-Como repositorio de investigacion, su valor es alto. Como repositorio de software reproducible, todavia necesita consolidacion adicional. Precisamente por eso esta documentacion busca servir como puente entre ambas cosas: explicar no solo que archivos existen, sino que historia metodologica cuentan y como se conectan con la investigacion descrita en el PDF.
+As a research repository, it is already valuable. As a fully reproducible software package, it still needs consolidation. This document is intended to bridge those two states by explaining not only which files exist, but also what methodological story they tell and how they relate to the research described in the manuscript.
